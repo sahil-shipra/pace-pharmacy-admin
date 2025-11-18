@@ -4,9 +4,10 @@ import { DataTable } from "./table/data-table";
 import { columns } from "./table/columns";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
-    useQuery,
+    useInfiniteQuery,
 } from '@tanstack/react-query'
-import { getAllPatient, type AuthStatusType, type PreferredLocationType, type QueryParams } from "./_api";
+import { getAllPatient } from "./_api";
+import { type AuthStatusType, type PreferredLocationType, type QueryParams } from "./types"
 import { isErrorResponse } from "@/types/common.api";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/table"
 import { useState } from "react";
 
-
 async function fetchPatientIntakes(params: QueryParams) {
     const response = await getAllPatient(params);
     if (isErrorResponse(response)) throw response.error
@@ -31,77 +31,102 @@ function PatientIntakes() {
     const [preferredLocation, setPreferredLocation] = useState<PreferredLocationType>('all')
     const [authStatus, setAuthStatus] = useState<AuthStatusType>('all')
 
-    const { data, isLoading, isSuccess } = useQuery({
+    const PAGE_SIZE = 15
+
+    const {
+        data,
+        isPending,
+        isSuccess,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useInfiniteQuery({
         queryKey: ['patient-intakes', authStatus, preferredLocation],
-        queryFn: () => fetchPatientIntakes({
-            authStatus,
-            preferredLocation
-        })
+        queryFn: ({ pageParam = 1 }) =>
+            fetchPatientIntakes({
+                authStatus,
+                preferredLocation,
+                page: pageParam,
+                pageSize: PAGE_SIZE,
+            }),
+        getNextPageParam: (lastPage) => {
+            const { page, totalPages } = lastPage.pagination
+            return page < totalPages ? page + 1 : undefined
+        },
+        initialPageParam: 1,
     })
 
-    if (isLoading) return (
+    const accounts = data?.pages.flatMap((page) => page.accounts) ?? []
+    const statistics = data?.pages?.[0]?.statistics
+    const summary = statistics ?? {
+        totalIntakes: 0,
+        completed: 0,
+        authPending: 0,
+    }
+
+    return (
         <Fragment>
-            {/* Statistics Cards Skeleton */}
-            <div className="grid grid-cols-3 gap-2.5">
-                {[1, 2, 3].map((i) => (
-                    <div key={i} className="border rounded-lg py-2.5 px-4 flex justify-between items-center">
-                        <div className="flex-1">
-                            <Skeleton className="h-4 w-24 mb-2" />
-                            <Skeleton className="h-8 w-16" />
+            {isPending &&
+                <div className="container mx-auto">
+                    {/* Statistics Cards Skeleton */}
+                    <div className="grid grid-cols-3 gap-2.5">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="border rounded-lg py-2.5 px-4 flex justify-between items-center">
+                                <div className="flex-1">
+                                    <Skeleton className="h-4 w-24 mb-2" />
+                                    <Skeleton className="h-8 w-16" />
+                                </div>
+                                <Skeleton className="size-12 rounded-full" />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Table Section Skeleton */}
+                    <div className="my-5">
+                        <div className="flex justify-between items-center my-2.5">
+                            <Skeleton className="h-8 w-48" />
+
+                            <div className="flex justify-end items-center gap-2">
+                                <Skeleton className="h-10 w-32" />
+                                <Skeleton className="h-10 w-40" />
+                            </div>
                         </div>
-                        <Skeleton className="size-12 rounded-full" />
-                    </div>
-                ))}
-            </div>
 
-            {/* Table Section Skeleton */}
-            <div className="my-5">
-                <div className="flex justify-between items-center my-2.5">
-                    <Skeleton className="h-8 w-48" />
-
-                    <div className="flex justify-end items-center gap-2">
-                        <Skeleton className="h-10 w-32" />
-                        <Skeleton className="h-10 w-40" />
-                    </div>
-                </div>
-
-                {/* Table Skeleton */}
-                <div className="overflow-hidden rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="bg-secondary">
-                                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                                    <TableHead key={i}>
-                                        <Skeleton className="h-4 w-20" />
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {[1, 2, 3, 4, 5].map((row) => (
-                                <TableRow key={row}>
-                                    {[1, 2, 3, 4, 5, 6, 7].map((cell) => (
-                                        <TableCell key={cell}>
-                                            <Skeleton className="h-4 w-full" />
-                                        </TableCell>
+                        {/* Table Skeleton */}
+                        <div className="overflow-hidden rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-secondary">
+                                        {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                                            <TableHead key={i}>
+                                                <Skeleton className="h-4 w-20" />
+                                            </TableHead>
+                                        ))}
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {[1, 2, 3, 4, 5].map((row) => (
+                                        <TableRow key={row}>
+                                            {[1, 2, 3, 4, 5, 6, 7].map((cell) => (
+                                                <TableCell key={cell}>
+                                                    <Skeleton className="h-4 w-full" />
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
                                     ))}
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </Fragment>
-    );
+            }
 
-    if (isSuccess)
-        return (
-            <div className="container mx-auto">
+            {isSuccess && <div className="container mx-auto">
                 <div className="grid grid-cols-3 gap-2.5">
                     <div className="border rounded-lg py-2.5 px-4 flex justify-between items-center">
                         <div>
                             <h1 className="text-sm font-normal text-muted-foreground mb-2">Total Intakes</h1>
-                            <h2 className="text-theme-green font-bold text-2xl">{data.statistics.totalIntakes}</h2>
+                            <h2 className="text-theme-green font-bold text-2xl">{summary.totalIntakes}</h2>
                         </div>
 
                         <div className="size-12 rounded-full flex justify-center items-center bg-theme-green-100">
@@ -112,7 +137,7 @@ function PatientIntakes() {
                     <div className="border rounded-lg py-2.5 px-4 flex justify-between items-center">
                         <div>
                             <h1 className="text-sm font-normal text-muted-foreground mb-2">Auth Pending</h1>
-                            <h2 className="text-theme-green font-bold text-2xl">{data.statistics.authPending}</h2>
+                            <h2 className="text-theme-green font-bold text-2xl">{summary.authPending}</h2>
                         </div>
 
                         <div className="size-12 rounded-full flex justify-center items-center bg-theme-green-100">
@@ -123,7 +148,7 @@ function PatientIntakes() {
                     <div className="border rounded-lg py-2.5 px-4 flex justify-between items-center">
                         <div>
                             <h1 className="text-sm font-normal text-muted-foreground mb-2">Completed</h1>
-                            <h2 className="text-theme-green font-bold text-2xl">{data.statistics.completed}</h2>
+                            <h2 className="text-theme-green font-bold text-2xl">{summary.completed}</h2>
                         </div>
 
                         <div className="size-12 rounded-full flex justify-center items-center bg-theme-green-100">
@@ -157,10 +182,19 @@ function PatientIntakes() {
                             </div>
                         </div>
                     </div>
-                    <DataTable columns={columns} data={data.accounts} />
+                    <DataTable
+                        columns={columns}
+                        data={accounts}
+                        infiniteScrollConfig={{
+                            hasMore: Boolean(hasNextPage),
+                            isFetching: isFetchingNextPage,
+                            loadMore: () => fetchNextPage(),
+                        }}
+                    />
                 </div>
-            </div>
-        )
+            </div>}
+        </Fragment>
+    )
 }
 
 export default PatientIntakes

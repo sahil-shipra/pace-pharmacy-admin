@@ -1,5 +1,5 @@
 import { type ColumnDef } from "@tanstack/react-table"
-import type { AccountInfo } from "../_api"
+import type { AccountInfo } from "../types"
 import { format } from 'date-fns';
 import { cn } from "@/lib/utils";
 import RowActions from "./row-actions";
@@ -25,6 +25,7 @@ export const columns: ColumnDef<AccountInfo>[] = [
     {
         accessorKey: "accountHolderName",
         header: "Acc. Holder Name",
+        enableSorting: true
     },
     {
         accessorKey: "authStatus",
@@ -42,10 +43,12 @@ export const columns: ColumnDef<AccountInfo>[] = [
     {
         accessorKey: "medicalDirectorName",
         header: "Medical Director Name",
+        enableSorting: true
     },
     {
         accessorKey: "medicalDirectorLicense",
         header: "Director's License",
+        enableSorting: false
     },
     {
         accessorKey: "medicalDirectorEmail",
@@ -63,6 +66,7 @@ export const columns: ColumnDef<AccountInfo>[] = [
     {
         accessorKey: "actions",
         header: "Actions",
+        enableSorting: false,
         cell: RowActions
     },
 ]

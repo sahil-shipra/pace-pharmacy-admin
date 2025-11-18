@@ -1,50 +1,35 @@
 import Axios from '@/lib/Axios';
 import type { ApiResponse } from '@/types/common.api';
+import type { PatientIntakesResponse, PatientResponse, QueryParams } from './types';
 
-export interface AccountInfo {
-    createdAt: string;                 // ISO date string
-    updatedAt: string;                 // ISO date string
-    accountHolderName: string;
-    accountHolderEmail: string;
-    medicalDirectorName: string;
-    medicalDirectorLicense: string;
-    medicalDirectorEmail: string;
-    authStatus: "Pending" | "Approved" | "Rejected";
-}
-
-export type PaginationInfo = {
-    page: number;
-    pageSize: number;
-    totalCount: number;
-    totalPages: number;
-};
-
-export type IntakeSummary = {
-    totalIntakes: number;
-    completed: number;
-    authPending: number;
-};
-
-
-type Response = {
-    accounts: AccountInfo[]
-    statistics: IntakeSummary
-    pagination: PaginationInfo
-}
-
-export type PreferredLocationType = "all" | 'leaside' | "downtown"
-export type AuthStatusType = "all" | 'pending' | "completed"
-
-export type QueryParams = {
-    preferredLocation: PreferredLocationType,
-    authStatus: AuthStatusType
-}
 
 /**
- * Creates a new account.
- * @returns {Promise<Object>} Response data from the server.
+ * Fetches all patients from the server.
+ * @param params Query parameters for filtering or pagination.
+ * @returns {Promise<ApiResponse<PatientIntakesResponse>>} Response data from the server.
  */
-export const getAllPatient = async (params: QueryParams): Promise<ApiResponse<Response>> => {
-    const response = await Axios.get<ApiResponse<Response>>('/patient', { params });
+export const getAllPatient = async (params: QueryParams): Promise<ApiResponse<PatientIntakesResponse>> => {
+    const response = await Axios.get<ApiResponse<PatientIntakesResponse>>('/patient', { params });
+    return response.data;
+};
+
+/**
+ * Fetches all patients from the server.
+ * @param params Query parameters for filtering or pagination.
+ * @returns {Promise<ApiResponse<Response>>} Response data from the server.
+ */
+export const getPatient = async ({ accountId }: { accountId: number }): Promise<ApiResponse<PatientResponse>> => {
+    const response = await Axios.get<ApiResponse<PatientResponse>>(`/patient/${accountId}`);
+    return response.data;
+};
+
+/**
+ * Resends the authentication email for a patient account.
+ * @param data Object containing the account ID.
+ * @param data.accountId The ID of the account to resend the email for.
+ * @returns {Promise<ApiResponse<Response>>} Response data from the server.
+ */
+export const resendAuthEmail = async (data: { accountId: number }): Promise<ApiResponse<Response>> => {
+    const response = await Axios.post<ApiResponse<Response>>('/patient/resend-auth-email', data);
     return response.data;
 };

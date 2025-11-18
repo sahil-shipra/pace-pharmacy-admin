@@ -1,12 +1,12 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
     type ColumnDef,
+    type SortingState,
     flexRender,
     getCoreRowModel,
-    getPaginationRowModel,
+    getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 
 import {
     Table,
@@ -16,158 +16,170 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from "@/components/ui/select"
 import EmptyTable from "@/components/empty-table"
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
+
+type InfiniteScrollConfig = {
+    loadMore: () => void
+    hasMore: boolean
+    isFetching: boolean
+    triggerOffset?: string
+}
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    pageSize?: number
+    infiniteScrollConfig?: InfiniteScrollConfig
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    pageSize = 10,
+    infiniteScrollConfig,
 }: DataTableProps<TData, TValue>) {
-    const [pagination, setPagination] = useState({
-        pageIndex: 0,
-        pageSize: pageSize,
-    })
+    const loaderRowRef = useRef<HTMLTableRowElement | null>(null)
+    const [sorting, setSorting] = useState<SortingState>([])
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        onPaginationChange: setPagination,
+        getSortedRowModel: getSortedRowModel(),
         state: {
-            pagination,
+            sorting,
         },
-        initialState: {
-            pagination: {
-                pageIndex: 0,
-                pageSize: pageSize,
-            },
-        },
+        onSortingChange: setSorting,
     })
 
+    const hasMore = infiniteScrollConfig?.hasMore ?? false
+    const isFetchingMore = infiniteScrollConfig?.isFetching ?? false
+    const triggerOffset = infiniteScrollConfig?.triggerOffset ?? "300px"
+    const loadMore = infiniteScrollConfig?.loadMore
+
+    useEffect(() => {
+        const node = loaderRowRef.current
+        if (!node || !loadMore || !hasMore) {
+            return
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0]
+                if (entry.isIntersecting && hasMore && !isFetchingMore) {
+                    loadMore()
+                }
+            },
+            {
+                root: null,
+                rootMargin: triggerOffset,
+                threshold: 0,
+            }
+        )
+
+        observer.observe(node)
+
+        return () => {
+            observer.disconnect()
+        }
+    }, [hasMore, isFetchingMore, loadMore, triggerOffset])
+
+    const shouldRenderLoaderRow = Boolean(
+        infiniteScrollConfig && (hasMore || isFetchingMore)
+    )
+
+    const loaderMessage = isFetchingMore
+        ? "Loading more records..."
+        : hasMore
+            ? "Scroll to load more"
+            : "You're all caught up"
+
     return (
-        <div className="space-y-4">
-            <div className="overflow-hidden rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="bg-secondary">
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
+        <div className="relative w-full overflow-auto max-h-[calc(100dvh-298px)]">
+            <Table className="w-full h-full">
+                <TableHeader className={`sticky top-0 z-40`}>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id} className="bg-secondary">
+                            {headerGroup.headers.map((header) => {
+                                return (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : (() => {
+                                                const canSort = header.column.getCanSort()
+                                                const headerContent = flexRender(
                                                     header.column.columnDef.header,
                                                     header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    <EmptyTable />
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-            <div className="flex items-center justify-between px-2">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredRowModel().rows.length} row(s) total.
-                </div>
-                <div className="flex items-center space-x-6 lg:space-x-8">
-                    <div className="flex items-center space-x-2">
-                        <p className="text-sm font-medium">Rows per page</p>
-                        <Select
-                            value={String(table.getState().pagination.pageSize)}
-                            onValueChange={(value) => {
-                                table.setPageSize(Number(value))
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[70px]">
-                                <SelectValue placeholder="Select a fruit" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {[10, 20, 30, 50, 100].map((pageSize) => (
-                                    <SelectItem key={pageSize} value={String(pageSize)}>
-                                        {pageSize}
-                                    </SelectItem >
+                                                )
+
+                                                if (!canSort) {
+                                                    return headerContent
+                                                }
+
+                                                return (
+                                                    <button
+                                                        type="button"
+                                                        className="flex w-full items-center gap-2 text-left text-sm font-medium"
+                                                        onClick={header.column.getToggleSortingHandler()}
+                                                    >
+                                                        {headerContent}
+                                                        <SortingIndicator direction={header.column.getIsSorted()} />
+                                                    </button>
+                                                )
+                                            })()}
+                                    </TableHead>
+                                )
+                            })}
+                        </TableRow>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow
+                                key={row.id}
+                                data-state={row.getIsSelected() && "selected"}
+                            >
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
                                 ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                        Page {table.getState().pagination.pageIndex + 1} of{" "}
-                        {table.getPageCount()}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Button
-                            variant="outline"
-                            className="h-8 w-8 p-0"
-                            onClick={() => table.setPageIndex(0)}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <span className="sr-only">Go to first page</span>
-                            <ChevronsLeft className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="h-8 w-8 p-0"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <span className="sr-only">Go to previous page</span>
-                            <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="h-8 w-8 p-0"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <span className="sr-only">Go to next page</span>
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="h-8 w-8 p-0"
-                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <span className="sr-only">Go to last page</span>
-                            <ChevronsRight className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </div>
-            </div>
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <EmptyTable />
+                            </TableCell>
+                        </TableRow>
+                    )}
+                    {shouldRenderLoaderRow && (
+                        <TableRow ref={loaderRowRef}>
+                            <TableCell colSpan={columns.length}>
+                                <div className="py-4 text-center text-sm text-muted-foreground">
+                                    {loaderMessage}
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
         </div>
     )
+}
+
+function SortingIndicator({
+    direction,
+}: {
+    direction: false | "asc" | "desc"
+}) {
+    if (!direction) {
+        return <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+    }
+
+    if (direction === "asc") {
+        return <ArrowUp className="h-4 w-4 text-muted-foreground" />
+    }
+
+    return <ArrowDown className="h-4 w-4 text-muted-foreground" />
 }

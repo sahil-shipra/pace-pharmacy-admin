@@ -30,7 +30,9 @@ function LoginComponent() {
         },
         onError: (res) => {
             if (isAxiosError(res)) {
-                toast.error(res.response?.data?.error)
+                if (res.code === "ERR_NETWORK") {
+                    toast.error('ERR_NETWORK: Failed to reach the API. Verify your connection and retry.')
+                } else toast.error(res.response?.data?.error)
             } else {
                 toast.error(res.message)
             }
@@ -63,13 +65,22 @@ function LoginComponent() {
     return (
         <section className='bg-theme-green-50 h-svh'>
             <div className="flex justify-between items-start">
-                <div className="min-h-20 flex justify-start items-center w-fit py-16 pl-10">
-                    <img
-                        src="/logo.png"
-                        alt="pace-pharmacy-logo"
-                        className="h-18 w-fit"
-                        loading="lazy"
-                    />
+
+                <div>
+                    <div className="min-h-20 flex justify-start items-center w-fit py-16 pl-10">
+                        <img
+                            src="/logo.png"
+                            alt="pace-pharmacy-logo"
+                            className="h-18 w-fit"
+                            loading="lazy"
+                        />
+                    </div>
+
+                    <div className="py-16 pl-10 text-8xl text-theme-green-100 font-bold">
+                        EXPERTS IN <br />
+                        COMPOUNDING <br />
+                        PRESCRIPTIONS <br />
+                    </div>
                 </div>
 
 
