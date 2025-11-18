@@ -1,0 +1,10 @@
+services:
+  adminapp:
+    container_name: app_admin
+    build:
+      context: .
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+     - "4002:80"
+    restart: unless-stopped
