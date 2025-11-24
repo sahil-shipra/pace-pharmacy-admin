@@ -197,13 +197,19 @@ function ViewPatientProfile({ accountId }: Props) {
                                         <div className="w-1/2 min-h-96 pl-6 flex flex-col gap-8">
                                             <InfoSection
                                                 title="Payment Information"
-                                                items={[
-                                                    { label: "Payment Method", value: PaymentMethodLabel[data.payment_information?.paymentMethod] },
-                                                    { label: "Card Number", value: cardNumberDisplay },
-                                                    { label: "Card Holder Name", value: data.payment_information?.nameOnCard },
-                                                    { label: "Expiry Date", value: cardExpiryDisplay },
-                                                    { label: "CVV", value: data.payment_information ? "***" : "—" },
-                                                ]}
+                                                items={
+                                                    data.payment_information?.paymentMethod === 'bank_transfer' ?
+                                                        [
+                                                            { label: "Payment Method", value: PaymentMethodLabel[data.payment_information?.paymentMethod] },
+                                                        ]
+                                                        :
+                                                        [
+                                                            { label: "Payment Method", value: PaymentMethodLabel[data.payment_information?.paymentMethod] },
+                                                            { label: "Card Number", value: cardNumberDisplay },
+                                                            { label: "Card Holder Name", value: data.payment_information?.nameOnCard },
+                                                            { label: "Expiry Date", value: cardExpiryDisplay },
+                                                            { label: "CVV", value: data.payment_information ? "***" : "—" },
+                                                        ]}
                                             />
 
                                             <InfoSection

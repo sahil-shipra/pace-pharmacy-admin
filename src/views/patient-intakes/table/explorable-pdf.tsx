@@ -165,10 +165,14 @@ const ExportPDF = ({ data }: { data: PatientResponse }) => {
                     <Text style={styles.label}>Payment Information :</Text>
                     <View>
                         <Text style={{ ...styles.text, margin: "2px 0" }}>[{data.payment_information.paymentMethod === 'visa' && '*'}] Visa   [{data.payment_information.paymentMethod === 'mastercard' && '*'}] Master Card   [{data.payment_information.paymentMethod === 'bank_transfer' && '*'}] E-Transfer</Text>
-                        <Text style={{ ...styles.text, margin: "2px 0" }}>
-                            Card Number : {cardNumberDisplay}   Exp : {cardExpiryDisplay}   CVV : {data.payment_information ? "***" : "—"}
-                        </Text>
-                        <Text style={{ ...styles.text, margin: "2px 0" }}>Name on Card : {data.payment_information.nameOnCard}</Text>
+                        {data.payment_information.paymentMethod !== 'bank_transfer' &&
+                            <>
+                                <Text style={{ ...styles.text, margin: "2px 0" }}>
+                                    Card Number : {cardNumberDisplay}   Exp : {cardExpiryDisplay}   CVV : {data.payment_information ? "***" : "—"}
+                                </Text>
+                                <Text style={{ ...styles.text, margin: "2px 0" }}>Name on Card : {data.payment_information.nameOnCard}</Text>
+                            </>
+                        }
                     </View>
                 </View>
 
