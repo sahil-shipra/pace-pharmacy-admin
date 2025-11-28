@@ -231,7 +231,7 @@ function ViewPatientProfile({ accountId }: Props) {
                                                             ? (data.medical_directors.isAlsoMedicalDirector ? "Yes" : "No")
                                                             : "—"
                                                     },
-                                                    { label: "Medical Director’s Email", value: data.medical_directors?.email },
+                                                    { label: "Medical Director's Email", value: data.medical_directors?.email },
                                                 ]}
                                             />
                                         </div>

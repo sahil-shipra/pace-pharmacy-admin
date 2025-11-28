@@ -9,6 +9,8 @@ export interface AccountInfo {
     medicalDirectorEmail: string;
     authStatus: "Pending" | "Approved" | "Rejected";
     accountId: number
+    isAccountActive: boolean | null,
+    accountStatus: "active" | "inactive"
 }
 
 export type PaginationInfo = {
@@ -55,6 +57,7 @@ export type PatientResponse = {
         createdAt: string;
         updatedAt: string;
         preferredLocation: number;
+        shippingSameAsBilling: boolean | null
     };
     acknowledgements: {
         id: number;

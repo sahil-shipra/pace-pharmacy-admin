@@ -30,7 +30,6 @@ function ExportFile({ accountId }: { accountId: number }) {
         mutationKey: ['patient', accountId],
         mutationFn: () => fetchPatient({ accountId }),
         onSuccess: async (res) => {
-            console.log('res', res)
             await downloadPdf(res)
             setIsDone(true)
             setTimeout(() => {

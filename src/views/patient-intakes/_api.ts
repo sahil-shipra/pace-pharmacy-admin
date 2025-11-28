@@ -33,3 +33,27 @@ export const resendAuthEmail = async (data: { accountId: number }): Promise<ApiR
     const response = await Axios.post<ApiResponse<Response>>('/patient/resend-auth-email', data);
     return response.data;
 };
+
+/**
+ * Resends the authentication email for a patient account.
+ * @param data Object containing the account ID.
+ * @param data.accountId The ID of the account to resend the email for.
+ * @param data.isActive status.
+ * @returns {Promise<ApiResponse<Response>>} Response data from the server.
+ */
+export const updateAccountStatus = async (data: { accountId: number, isActive: boolean }): Promise<ApiResponse<Response>> => {
+    const response = await Axios.put<ApiResponse<Response>>('patient/update-account-status', data);
+    return response.data;
+};
+
+/**
+ * Resends the authentication email for a patient account.
+ * @param data Object containing the account ID.
+ * @param data.accountId The ID of the account to resend the email for.
+ * @param data.isActive status.
+ * @returns {Promise<ApiResponse<Response>>} Response data from the server.
+ */
+export const updateAccount = async (accountId: number, data: any): Promise<ApiResponse<Response>> => {
+    const response = await Axios.patch<ApiResponse<Response>>(`patient/${accountId}`, data);
+    return response.data;
+};
