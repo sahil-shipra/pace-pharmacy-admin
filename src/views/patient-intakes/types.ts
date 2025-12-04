@@ -43,6 +43,16 @@ export type QueryParams = {
     pageSize?: number
 }
 
+export type DocumentsType = {
+    id: string;
+    referenceCode: string;
+    path: string;
+    fullPath: string;
+    createdAt: string; // ISO date string
+    updatedAt: string; // ISO date string
+    publicUrl: string;
+};
+
 export type PatientResponse = {
     accounts: {
         id: number;
@@ -108,6 +118,7 @@ export type PatientResponse = {
         submittedDate: string | null;
         prescriptionRequirement: "withPrescription" | "withoutPrescription" | null;
     };
+    documents: DocumentsType;
     addresses: Array<{
         id: number;
         accountId: number;

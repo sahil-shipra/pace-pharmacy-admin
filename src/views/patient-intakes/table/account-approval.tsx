@@ -36,7 +36,7 @@ function AccountApproval({ accountId, isAccountActive }: Props) {
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <p>Deactive Profile</p>
+                        <p>Disapproval Patient Intake</p>
                     </TooltipContent>
                 </Tooltip>
                 : <Tooltip>
@@ -46,7 +46,7 @@ function AccountApproval({ accountId, isAccountActive }: Props) {
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <p>Active Profile</p>
+                        <p>Approve Patient Intake</p>
                     </TooltipContent>
                 </Tooltip>}
         </Fragment>

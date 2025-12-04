@@ -26,6 +26,7 @@ import MedicalDirector from "./medical-director"
 import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { updateRequestSchema, type UpdateAccountData } from "./schema"
+import Documents from "./documents"
 
 interface Props {
     accountId: number
@@ -193,6 +194,7 @@ function EditPatientProfile({ accountId }: Props) {
 
                                                 <div className="w-1/2 min-h-96 pl-6 flex flex-col gap-8">
                                                     <MedicalDirector />
+                                                    <Documents referenceCode={data.applications.referenceCode} />
 
                                                     <InfoSection
                                                         title="Payment Information"

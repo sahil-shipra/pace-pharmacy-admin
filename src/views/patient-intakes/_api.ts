@@ -1,6 +1,6 @@
 import Axios from '@/lib/Axios';
 import type { ApiResponse } from '@/types/common.api';
-import type { PatientIntakesResponse, PatientResponse, QueryParams } from './types';
+import type { DocumentsType, PatientIntakesResponse, PatientResponse, QueryParams } from './types';
 
 
 /**
@@ -55,5 +55,21 @@ export const updateAccountStatus = async (data: { accountId: number, isActive: b
  */
 export const updateAccount = async (accountId: number, data: any): Promise<ApiResponse<Response>> => {
     const response = await Axios.patch<ApiResponse<Response>>(`patient/${accountId}`, data);
+    return response.data;
+};
+
+
+export const getDocuments = async (code: string): Promise<ApiResponse<{ docs: DocumentsType[] }>> => {
+    const response = await Axios.get<ApiResponse<{ docs: DocumentsType[] }>>(`patient/documents/${code}`);
+    return response.data;
+};
+
+export const deleteDocuments = async (code: string): Promise<ApiResponse<any>> => {
+    const response = await Axios.delete<ApiResponse<any>>(`patient/documents/${code}`);
+    return response.data;
+};
+
+export const uploadNewDocuments = async (code: string, data: any): Promise<ApiResponse<any>> => {
+    const response = await Axios.put<ApiResponse<any>>(`patient/upload-documents/${code}`, data);
     return response.data;
 };
