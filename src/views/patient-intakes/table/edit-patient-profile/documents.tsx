@@ -107,6 +107,7 @@ function Documents({ referenceCode }: Props) {
             </div>
 
             <div>
+
                 <div className={cn("flex items-center justify-center w-full border rounded-md p-2",
                     (documents && documents.length > 0) && "justify-between items-start gap-2",
                 )}>
@@ -135,6 +136,7 @@ function Documents({ referenceCode }: Props) {
                 {isLoading && <div className="flex justify-start items-center gap-2">
                     <div><Loader2 className="animate-spin size-4.5" /></div> Retrieving your documents. This may take a moment…
                 </div>}
+
                 {(isSuccess && data.docs && data.docs.length > 0) && (
                     <div className="grid grid-cols-1 gap-1">
                         {data.docs.map((file, index) => {
@@ -214,6 +216,7 @@ function Documents({ referenceCode }: Props) {
                         </div>
                     </div>
                 )}
+
             </div>
         </Fragment>
     )
@@ -243,8 +246,9 @@ const DeleteDocument = ({ id }: { id: string }) => {
             onClick={() => onRemoveDocument(id)}
             className="p-0.5 hover:text-red-600 transition-colors cursor-pointer size-5"
             disabled={isPending}
-        >
-            {isPending ? <Loader2 className="animate-spin size-4" /> : <X className="size-4" />}
+        ><Fragment>
+                {isPending ? <Loader2 className="animate-spin size-4" /> : <X className="size-4" />}
+            </Fragment>
         </Button>
     </Fragment>)
 }

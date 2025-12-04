@@ -146,7 +146,7 @@ function EditPatientProfile({ accountId }: Props) {
     const onSubmit = (data: UpdateAccountData) => {
         onUpdateAccount(data)
     };
-    console.log(methods.formState.errors)
+
     return (
         <Fragment>
             <Dialog open={open} onOpenChange={onOpenChange}>
