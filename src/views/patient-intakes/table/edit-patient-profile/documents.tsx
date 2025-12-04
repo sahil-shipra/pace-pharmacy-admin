@@ -137,32 +137,28 @@ function Documents({ referenceCode }: Props) {
                     <div><Loader2 className="animate-spin size-4.5" /></div> Retrieving your documents. This may take a moment…
                 </div>}
 
-                {(isSuccess && data.docs && data.docs.length > 0) && (
+                {(isSuccess && data && data.docs?.length > 0) && (
                     <div className="grid grid-cols-1 gap-1">
-                        {data.docs.map((file, index) => {
-                            return (
-
-                                <div
-                                    key={index}
-                                    className="bg-theme-green-100 p-2.5 w-fit flex justify-start items-center gap-1 rounded-lg h-11"
+                        {data.docs.map((file, index) => (
+                            <div
+                                key={file.id || index}
+                                className="bg-theme-green-100 p-2.5 w-fit flex justify-start items-center gap-1 rounded-lg h-11"
+                            >
+                                <span className="max-w-sm truncate">Documents {index + 1}</span>
+                                <Button
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    type="button"
+                                    className="p-0.5 hover:text-green-500 hover:bg-transparent transition-colors cursor-pointer size-5"
+                                    asChild
                                 >
-                                    <span className="max-w-sm truncate">{`Documents ${index + 1}`}</span>
-                                    <Button
-                                        variant={'ghost'}
-                                        size={"icon-sm"}
-                                        type="button"
-                                        className="p-0.5 hover:text-green-500 hover:bg-transparent transition-colors cursor-pointer size-5"
-                                        asChild
-                                    > <a href={file.publicUrl} target="_blank">
-                                            <Eye className="size-4" />
-                                        </a>
-                                    </Button>
-                                    <DeleteDocument id={file.id} />
-                                </div>
-
-
-                            )
-                        })}
+                                    <a href={file.publicUrl} target="_blank" rel="noopener noreferrer">
+                                        <Eye className="size-4" />
+                                    </a>
+                                </Button>
+                                <DeleteDocument id={file.id} />
+                            </div>
+                        ))}
                     </div>
                 )}
 
@@ -225,7 +221,7 @@ function Documents({ referenceCode }: Props) {
 export default Documents
 
 
-const DeleteDocument = ({ id }: { id: string }) => {
+export const DeleteDocument = ({ id }: { id: string }) => {
     const queryClient = useQueryClient()
 
     const { mutate: onRemoveDocument, isPending } = useMutation({
