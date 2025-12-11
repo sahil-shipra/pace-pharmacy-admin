@@ -100,6 +100,8 @@ export type PatientResponse = {
         id: number;
         accountId: number;
         paymentMethod: 'visa' | 'mastercard' | 'amex' | 'bank_transfer';
+        cardNumber: string;
+        cardCvv: string;
         cardNumberLast4: string;
         nameOnCard: string;
         cardExpiryMonth: string;

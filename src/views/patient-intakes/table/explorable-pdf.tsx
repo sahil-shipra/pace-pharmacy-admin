@@ -74,7 +74,7 @@ const ExportPDF = ({ data }: { data: PatientResponse }) => {
     const shippingAddress = data?.addresses?.find(address => address.addressType?.toLowerCase() === "shipping") ?? data?.addresses?.[1]
 
     const cardNumberDisplay = data?.payment_information
-        ? `**** **** **** ${data.payment_information.cardNumberLast4 ?? "----"}`
+        ? `${data.payment_information.cardNumber ?? "----"}`
         : "—"
 
     const cardExpiryDisplay = data?.payment_information
@@ -168,7 +168,7 @@ const ExportPDF = ({ data }: { data: PatientResponse }) => {
                         {data.payment_information.paymentMethod !== 'bank_transfer' &&
                             <>
                                 <Text style={{ ...styles.text, margin: "2px 0" }}>
-                                    Card Number : {cardNumberDisplay}   Exp : {cardExpiryDisplay}   CVV : {data.payment_information ? "***" : "—"}
+                                    Card Number : {cardNumberDisplay}   Exp : {cardExpiryDisplay}   CVV : {data.payment_information ? data.payment_information.cardCvv : "—"}
                                 </Text>
                                 <Text style={{ ...styles.text, margin: "2px 0" }}>Name on Card : {data.payment_information.nameOnCard}</Text>
                             </>

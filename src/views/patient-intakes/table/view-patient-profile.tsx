@@ -20,6 +20,7 @@ import type { PatientResponse } from "../types"
 import { format } from "date-fns"
 import ResendAuthEmail from "./resend-auth-email"
 import ExportForm from "./export-file"
+import PaymentInformation from "./payment-information"
 
 interface Props {
     accountId: number
@@ -80,14 +81,6 @@ export function formatAddress(address?: PatientResponse["addresses"][number]) {
 }
 
 
-export const PaymentMethodLabel: Record<string, string> = {
-    "visa": 'VISA',
-    "mastercard": 'Master Card',
-    "amex": 'American Express',
-    "bank_transfer": 'E-Transfer'
-};
-
-
 function ViewPatientProfile({ accountId }: Props) {
     const [open, onOpenChange] = useState(false)
     const { data, isLoading, isSuccess } = useQuery({
@@ -98,14 +91,6 @@ function ViewPatientProfile({ accountId }: Props) {
 
     const billingAddress = data?.addresses?.find(address => address.addressType?.toLowerCase() === "billing") ?? data?.addresses?.[0]
     const shippingAddress = data?.addresses?.find(address => address.addressType?.toLowerCase() === "shipping") ?? data?.addresses?.[1]
-
-    const cardNumberDisplay = data?.payment_information
-        ? `**** **** **** ${data.payment_information.cardNumberLast4 ?? "----"}`
-        : "—"
-
-    const cardExpiryDisplay = data?.payment_information
-        ? `${data.payment_information.cardExpiryMonth}/${data.payment_information.cardExpiryYear?.slice(-2) ?? "--"}`
-        : "—"
 
     return (
         <Fragment>
@@ -195,22 +180,7 @@ function ViewPatientProfile({ accountId }: Props) {
                                         </div>
 
                                         <div className="w-1/2 min-h-96 pl-6 flex flex-col gap-8">
-                                            <InfoSection
-                                                title="Payment Information"
-                                                items={
-                                                    data.payment_information?.paymentMethod === 'bank_transfer' ?
-                                                        [
-                                                            { label: "Payment Method", value: PaymentMethodLabel[data.payment_information?.paymentMethod] },
-                                                        ]
-                                                        :
-                                                        [
-                                                            { label: "Payment Method", value: PaymentMethodLabel[data.payment_information?.paymentMethod] },
-                                                            { label: "Card Number", value: cardNumberDisplay },
-                                                            { label: "Card Holder Name", value: data.payment_information?.nameOnCard },
-                                                            { label: "Expiry Date", value: cardExpiryDisplay },
-                                                            { label: "CVV", value: data.payment_information ? "***" : "—" },
-                                                        ]}
-                                            />
+                                            <PaymentInformation paymentInformation={data.payment_information} />
 
                                             <InfoSection
                                                 title="Acknowledgements"

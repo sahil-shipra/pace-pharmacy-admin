@@ -27,6 +27,7 @@ import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { updateRequestSchema, type UpdateAccountData } from "./schema"
 import Documents from "./documents"
+import PaymentInformation from "../payment-information"
 
 interface Props {
     accountId: number
@@ -64,15 +65,6 @@ function InfoSection({ title, items, isEditable }: { title: string, items: InfoI
         </div>
     )
 }
-
-
-const PaymentMethodLabel: Record<string, string> = {
-    "visa": 'VISA',
-    "mastercard": 'Master Card',
-    "amex": 'American Express',
-    "bank_transfer": 'E-Transfer'
-};
-
 
 function EditPatientProfile({ accountId }: Props) {
     const [open, onOpenChange] = useState(false)
@@ -120,15 +112,6 @@ function EditPatientProfile({ accountId }: Props) {
             methods.reset()
         }
     }, [data, isSuccess, open])
-
-
-    const cardNumberDisplay = data?.payment_information
-        ? `**** **** **** ${data.payment_information.cardNumberLast4 ?? "----"}`
-        : "—"
-
-    const cardExpiryDisplay = data?.payment_information
-        ? `${data.payment_information.cardExpiryMonth}/${data.payment_information.cardExpiryYear?.slice(-2) ?? "--"}`
-        : "—"
 
     const queryClient = useQueryClient()
     const { mutate: onUpdateAccount, isPending } = useMutation({
@@ -196,22 +179,7 @@ function EditPatientProfile({ accountId }: Props) {
                                                     <MedicalDirector />
                                                     <Documents referenceCode={data.applications.referenceCode} />
 
-                                                    <InfoSection
-                                                        title="Payment Information"
-                                                        items={
-                                                            data.payment_information?.paymentMethod === 'bank_transfer' ?
-                                                                [
-                                                                    { label: "Payment Method", value: PaymentMethodLabel[data.payment_information?.paymentMethod] },
-                                                                ]
-                                                                :
-                                                                [
-                                                                    { label: "Payment Method", value: PaymentMethodLabel[data.payment_information?.paymentMethod] },
-                                                                    { label: "Card Number", value: cardNumberDisplay },
-                                                                    { label: "Card Holder Name", value: data.payment_information?.nameOnCard },
-                                                                    { label: "Expiry Date", value: cardExpiryDisplay },
-                                                                    { label: "CVV", value: data.payment_information ? "***" : "—" },
-                                                                ]}
-                                                    />
+                                                    <PaymentInformation paymentInformation={data.payment_information} />
 
                                                     <InfoSection
                                                         title="Acknowledgements"
