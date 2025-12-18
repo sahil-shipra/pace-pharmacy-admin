@@ -27,7 +27,7 @@ function MedicalDirector() {
                     return (
                         <Field data-invalid={fieldState.invalid} className="grid grid-cols-2 gap-2">
                             <FieldLabel htmlFor="single-person-application" className="text-muted-foreground">
-                                {`Single Person Application`}<span className="text-destructive">{`*`}</span>
+                                {`I am also the Medical Director`}<span className="text-destructive">{`*`}</span>
                             </FieldLabel>
                             <Select value={value} onValueChange={(v) => {
                                 if (v) { field.onChange(v === 'yes') }

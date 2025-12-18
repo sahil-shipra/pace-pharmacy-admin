@@ -196,7 +196,7 @@ function ViewPatientProfile({ accountId }: Props) {
                                                     { label: "Director Name", value: data.medical_directors?.name },
                                                     { label: "License", value: data.medical_directors?.licenseNo },
                                                     {
-                                                        label: "Single Person Application",
+                                                        label: "I am also the Medical Director",
                                                         value: data.medical_directors
                                                             ? (data.medical_directors.isAlsoMedicalDirector ? "Yes" : "No")
                                                             : "—"
