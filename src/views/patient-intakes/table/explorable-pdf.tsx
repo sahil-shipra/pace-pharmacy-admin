@@ -81,6 +81,14 @@ const ExportPDF = ({ data }: { data: PatientResponse }) => {
         ? `${data.payment_information.cardExpiryMonth}/${data.payment_information.cardExpiryYear?.slice(-2) ?? "--"}`
         : "—"
 
+    const deliveryHours = data?.delivery_settings?.deliveryHours;
+
+    const deliveryEntries = Object.entries(
+        typeof deliveryHours === "object" && deliveryHours !== null
+            ? deliveryHours
+            : {}
+    ).filter(([_, value]) => value);
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -151,14 +159,17 @@ const ExportPDF = ({ data }: { data: PatientResponse }) => {
                 <View style={{ ...styles.labelRow }}>
                     <Text style={styles.label}>Delivery Hours :</Text>
                     <View>
-                        <Text style={{ ...styles.text, margin: "2px 0" }}>
-                            Monday : 9am-5pm, Tuesday : 9am-5pm, Wednesday : 9am-5pm, Thursday : 9am-5pm,
-                        </Text>
-                        <Text style={{ ...styles.text, margin: "2px 0" }}>
-                            Friday : 9am-5pm
-                        </Text>
+                        {deliveryEntries.map(([day, value]) => (
+                            <Text
+                                key={day}
+                                style={{ ...styles.text, margin: "2px 0" }}
+                            >
+                                {day} : {value}
+                            </Text>
+                        ))}
                     </View>
                 </View>
+
                 <View style={styles.hr} />
 
                 <View style={styles.labelRow}>
@@ -236,7 +247,7 @@ const ExportPDF = ({ data }: { data: PatientResponse }) => {
                 </Text>
 
                 <View style={styles.checkboxRow}>
-                    <Text style={styles.text}>[{data.applications.prescriptionRequirement === 'withoutPrescription' && '*'}]</Text>
+                    <Text style={styles.text}>[{(data.applications.prescriptionRequirement === 'withoutPrescription' || data.medical_directors.isAlsoMedicalDirector) && '*'}]</Text>
                     <Text style={{ ...styles.text, marginLeft: 6 }}>
                         I authorize <Text style={styles.bold}>{data.accounts.holderName}</Text> account holder to order under my name for <Text style={styles.bold}>{data.accounts.organizationName}</Text> at their discretion, <Text style={styles.bold}>Without a written and signed prescription for each order.</Text>
                     </Text>

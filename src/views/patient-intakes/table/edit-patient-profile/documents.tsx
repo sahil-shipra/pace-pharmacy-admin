@@ -11,6 +11,7 @@ import { isErrorResponse } from "@/types/common.api";
 
 interface Props {
     referenceCode: string
+    viewOnly?: boolean
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
@@ -22,7 +23,7 @@ async function fetchDocuments(referenceCode: string) {
     return response.data
 }
 
-function Documents({ referenceCode }: Props) {
+function Documents({ referenceCode, viewOnly }: Props) {
     const [documents, setDocuments] = useState<any[]>([])
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -107,32 +108,32 @@ function Documents({ referenceCode }: Props) {
             </div>
 
             <div>
-
-                <div className={cn("flex items-center justify-center w-full border rounded-md p-2",
-                    (documents && documents.length > 0) && "justify-between items-start gap-2",
-                )}>
-                    <label htmlFor="dropzone-file" className="cursor-pointer">
-                        <Button
-                            className="z-0 cursor-pointer h-11 hover:shadow"
-                            type="button"
-                            variant={'secondary'}
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            {(documents && documents.length > 0) ? 'Upload more' : `Upload documents`}
-                        </Button>
-                    </label>
-                    <Input
-                        ref={fileInputRef}
-                        id="dropzone-file"
-                        type="file"
-                        accept="application/pdf,image/jpeg,image/png"
-                        className="hidden"
-                        multiple={true}
-                        onChange={(e) => handleFileChange(e)}
-                    />
-                </div>
-                <p className="py-0.5 text-sm font-medium text-foreground/80">PDF, JPG, PNG (Max 10MB per file)</p>
-
+                {!viewOnly && <Fragment>
+                    <div className={cn("flex items-center justify-center w-full border rounded-md p-2",
+                        (documents && documents.length > 0) && "justify-between items-start gap-2",
+                    )}>
+                        <label htmlFor="dropzone-file" className="cursor-pointer">
+                            <Button
+                                className="z-0 cursor-pointer h-11 hover:shadow"
+                                type="button"
+                                variant={'secondary'}
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                {(documents && documents.length > 0) ? 'Upload more' : `Upload documents`}
+                            </Button>
+                        </label>
+                        <Input
+                            ref={fileInputRef}
+                            id="dropzone-file"
+                            type="file"
+                            accept="application/pdf,image/jpeg,image/png"
+                            className="hidden"
+                            multiple={true}
+                            onChange={(e) => handleFileChange(e)}
+                        />
+                    </div>
+                    <p className="py-0.5 text-sm font-medium text-foreground/80">PDF, JPG, PNG (Max 10MB per file)</p>
+                </Fragment>}
                 {isLoading && <div className="flex justify-start items-center gap-2">
                     <div><Loader2 className="animate-spin size-4.5" /></div> Retrieving your documents. This may take a moment…
                 </div>}
@@ -144,7 +145,7 @@ function Documents({ referenceCode }: Props) {
                                 key={file.id || index}
                                 className="bg-theme-green-100 p-2.5 w-fit flex justify-start items-center gap-1 rounded-lg h-11"
                             >
-                                <span className="max-w-sm truncate">Documents {index + 1}</span>
+                                <span className="max-w-sm truncate">Document {index + 1}</span>
                                 <Button
                                     variant="ghost"
                                     size="icon-sm"
@@ -156,7 +157,7 @@ function Documents({ referenceCode }: Props) {
                                         <Eye className="size-4" />
                                     </a>
                                 </Button>
-                                <DeleteDocument id={file.id} />
+                                {!viewOnly && <Fragment><DeleteDocument id={file.id} /></Fragment>}
                             </div>
                         ))}
                     </div>

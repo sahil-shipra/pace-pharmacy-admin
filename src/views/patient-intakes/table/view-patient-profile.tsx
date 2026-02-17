@@ -21,6 +21,7 @@ import { format } from "date-fns"
 import ResendAuthEmail from "./resend-auth-email"
 import ExportForm from "./export-file"
 import PaymentInformation from "./payment-information"
+import Documents from "./edit-patient-profile/documents"
 
 interface Props {
     accountId: number
@@ -181,6 +182,7 @@ function ViewPatientProfile({ accountId }: Props) {
 
                                         <div className="w-1/2 min-h-96 pl-6 flex flex-col gap-8">
                                             <PaymentInformation paymentInformation={data.payment_information} />
+                                            <Documents referenceCode={data.applications.referenceCode} viewOnly/>
 
                                             <InfoSection
                                                 title="Acknowledgements"
