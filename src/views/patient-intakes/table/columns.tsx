@@ -64,6 +64,19 @@ export const columns: ColumnDef<AccountInfo>[] = [
         enableSorting: true
     },
     {
+        accessorKey: "krollStatus",
+        header: "Kroll Status",
+        cell: ({ getValue }) => {
+            const status = (getValue() || 'pending')
+            return (
+                <span className={cn("capitalize", String(status) === 'pending' ? "text-yellow-600" : 'text-theme-green')}>
+                    {String(status)}
+                </span>
+            )
+        },
+        enableSorting: true
+    },
+    {
         accessorKey: "actions",
         header: "Actions",
         enableSorting: false,
