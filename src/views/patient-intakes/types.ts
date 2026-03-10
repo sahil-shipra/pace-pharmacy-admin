@@ -59,6 +59,7 @@ export type PatientResponse = {
         holderName: string;
         designation: string;
         organizationName: string;
+        organizationType: "general-medical" | "aesthetics" | "naturopathic" | string;
         contactPerson: string;
         phone: string;
         emailAddress: string;

@@ -5,6 +5,7 @@ export const AccountSchema = z.object({
     holderName: z.string().min(1, 'Holder name is required'),
     designation: z.string().min(1, 'Designation is required'),
     organizationName: z.string().min(1, 'Organization name is required'),
+    organizationType: z.string().optional().default("general-medical"),
     contactPerson: z.string(),
     phone: z.string().min(1, 'Phone is required'),
     emailAddress: z

@@ -2,6 +2,7 @@ import { Controller, useFormContext } from "react-hook-form"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import InputWithMask from "@/components/input-with-mask"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 function AccountInformation() {
     const methods = useFormContext()
@@ -55,6 +56,65 @@ function AccountInformation() {
                         )}
                     </Field>
                 )}
+            />
+
+            <Controller
+                name="account.organizationType"
+                control={methods.control}
+                render={({ field, fieldState }) => {
+                    const isOther = field.value === "other" ||
+                        (field.value && !["general-medical", "aesthetics", "naturopathic", "other"].includes(field.value));
+                    const selectValue = isOther ? "other" : field.value;
+                    const otherValue = isOther ? field.value : "";
+
+                    return (
+                        <Field data-invalid={fieldState.invalid} className="grid grid-cols-2 gap-2">
+                            <FieldLabel htmlFor="account-holder-organization" className="text-muted-foreground">
+                                {`Clinic Type`}<span className="text-destructive">{`*`}</span>
+                            </FieldLabel>
+                            <Select
+                                value={selectValue}
+                                onValueChange={(val) => {
+                                    if (val !== "other") {
+                                        field.onChange(val);
+                                    } else {
+                                        field.onChange("other");
+                                    }
+                                }}
+                            >
+                                <SelectTrigger
+                                    id="clinic-type"
+                                    aria-invalid={fieldState.invalid}
+                                    className="h-12"
+                                >
+                                    <SelectValue placeholder="Select a clinic type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="general-medical">General Medical Clinic</SelectItem>
+                                    <SelectItem value="aesthetics">Aesthetics Clinic</SelectItem>
+                                    <SelectItem value="naturopathic">Naturopathic Clinic</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            <div className="w-full"></div>
+                            {selectValue === "other" && (
+                                <Input
+                                    value={otherValue === "other" ? "" : otherValue}
+                                    onChange={(e) => field.onChange(e.target.value)}
+                                    onBlur={field.onBlur}
+                                    placeholder="Please specify your clinic type"
+                                    autoComplete="off"
+                                    className=""
+                                />
+                            )}
+
+                            {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                            )}
+                        </Field>
+                    );
+                }}
             />
 
             <Controller
@@ -113,7 +173,7 @@ function AccountInformation() {
                         <FieldLabel htmlFor="account-holder-fax" className="text-muted-foreground">
                             {`Fax`}
                         </FieldLabel>
-                        <InputWithMask field={{ ...field }} fieldState={{ ...fieldState }} id="account-holder-fax" placeholder="Fax"/>
+                        <InputWithMask field={{ ...field }} fieldState={{ ...fieldState }} id="account-holder-fax" placeholder="Fax" />
                         {fieldState.invalid && (
                             <FieldError errors={[fieldState.error]} />
                         )}

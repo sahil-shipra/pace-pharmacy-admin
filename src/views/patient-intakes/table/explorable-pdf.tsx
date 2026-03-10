@@ -8,7 +8,7 @@ import {
 } from "@react-pdf/renderer";
 import type { PatientResponse } from "../types";
 import { format } from "date-fns";
-import { ProvincesEnum } from "./view-patient-profile";
+import { ProvincesEnum, shownOrganizationType } from "./view-patient-profile";
 
 const styles = StyleSheet.create({
     page: {
@@ -119,12 +119,22 @@ const ExportPDF = ({ data }: { data: PatientResponse }) => {
                 </View>
                 <View style={styles.hr} />
 
-                <View style={styles.labelRow}>
-                    <Text style={styles.label}>Clinic/Organization Name :</Text>
-                    <Text style={styles.text}>
-                        {data.accounts.organizationName}
-                    </Text>
+                <View style={{ ...styles.labelRow, justifyContent: 'space-between' }}>
+                    <View style={{ ...styles.labelRow, width: "50%", marginBottom: 0 }}>
+                        <Text style={styles.label}>Clinic/Organization Name :</Text>
+                        <Text style={styles.text}>
+                            {data.accounts.organizationName}
+                        </Text>
+                    </View>
+
+                    <View style={{ ...styles.labelRow, width: "50%", marginBottom: 0 }}>
+                        <Text style={styles.label}>Clinic/Organization Type :</Text>
+                        <Text style={styles.text}>
+                            {shownOrganizationType(data.accounts.organizationType)}
+                        </Text>
+                    </View>
                 </View>
+
                 <View style={styles.hr} />
 
                 <View style={styles.labelRow}>

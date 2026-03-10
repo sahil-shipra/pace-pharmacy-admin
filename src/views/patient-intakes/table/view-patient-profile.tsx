@@ -81,6 +81,22 @@ export function formatAddress(address?: PatientResponse["addresses"][number]) {
         .join(", ")
 }
 
+export function shownOrganizationType(
+    type: PatientResponse["accounts"]["organizationType"]
+) {
+    switch (type) {
+        case "general-medical":
+            return "General Medical Clinic";
+        case "aesthetics":
+            return "Aesthetics Clinic";
+        case "naturopathic":
+            return "Naturopathic Clinic";
+        case "other":
+            return type;
+        default:
+            return type; // custom value
+    }
+}
 
 function ViewPatientProfile({ accountId }: Props) {
     const [open, onOpenChange] = useState(false)
@@ -172,6 +188,7 @@ function ViewPatientProfile({ accountId }: Props) {
                                                     { label: "Account Holder", value: data.accounts.holderName },
                                                     { label: "License", value: data.accounts.designation },
                                                     { label: "Clinic / Organization", value: data.accounts.organizationName },
+                                                    { label: "Clinic Type", value: shownOrganizationType(data.accounts.organizationType) },
                                                     { label: "Billing Address", value: formatAddress(billingAddress) },
                                                     { label: "Shipping Address", value: formatAddress(shippingAddress) },
                                                     { label: "Phone", value: data.accounts.phone },
@@ -182,7 +199,7 @@ function ViewPatientProfile({ accountId }: Props) {
 
                                         <div className="w-1/2 min-h-96 pl-6 flex flex-col gap-8">
                                             <PaymentInformation paymentInformation={data.payment_information} />
-                                            <Documents referenceCode={data.applications.referenceCode} viewOnly/>
+                                            <Documents referenceCode={data.applications.referenceCode} viewOnly />
 
                                             <InfoSection
                                                 title="Acknowledgements"
