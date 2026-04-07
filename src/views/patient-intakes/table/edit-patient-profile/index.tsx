@@ -90,6 +90,7 @@ function EditPatientProfile({ accountId }: Props) {
 
             methods.setValue('account', {
                 ...account,
+                organizationType: account.organizationType || "general-medical", // Default if missing
                 holderName: holderName ?? "",
                 // Default to false if null/undefined (since boolean only)
                 shippingSameAsBilling: typeof shippingSameAsBilling === 'boolean' ? shippingSameAsBilling : false,
@@ -127,6 +128,8 @@ function EditPatientProfile({ accountId }: Props) {
     })
 
     const onSubmit = (data: UpdateAccountData) => {
+        data.account.holderName = `${data.account.firstName} ${data.account.lastName}`
+        data.medical_directors.name = `${data.medical_directors.firstName} ${data.medical_directors.lastName}`
         onUpdateAccount(data)
     };
 

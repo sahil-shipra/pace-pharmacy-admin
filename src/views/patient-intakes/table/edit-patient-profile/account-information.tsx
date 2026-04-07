@@ -11,12 +11,27 @@ function AccountInformation() {
             <h1 className="text-theme-green text-xl">{`Account Information`}</h1>
 
             <Controller
-                name="account.holderName"
+                name="account.firstName"
                 control={methods.control}
                 render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="grid grid-cols-2 gap-2">
                         <FieldLabel htmlFor="account-holder-name" className="text-muted-foreground">
-                            {`Account Holder`}<span className="text-destructive">{`*`}</span>
+                            {`First Name`}<span className="text-destructive">{`*`}</span>
+                        </FieldLabel>
+                        <Input aria-invalid={fieldState.invalid} id="account-holder-name" autoComplete="off" {...field} />
+                        {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                        )}
+                    </Field>
+                )}
+            />
+            <Controller
+                name="account.lastName"
+                control={methods.control}
+                render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid} className="grid grid-cols-2 gap-2">
+                        <FieldLabel htmlFor="account-holder-name" className="text-muted-foreground">
+                            {`Last Name`}<span className="text-destructive">{`*`}</span>
                         </FieldLabel>
                         <Input aria-invalid={fieldState.invalid} id="account-holder-name" autoComplete="off" {...field} />
                         {fieldState.invalid && (
@@ -62,6 +77,7 @@ function AccountInformation() {
                 name="account.organizationType"
                 control={methods.control}
                 render={({ field, fieldState }) => {
+                    console.log('field.value', field.value)
                     const isOther = field.value === "other" ||
                         (field.value && !["general-medical", "aesthetics", "naturopathic", "other"].includes(field.value));
                     const selectValue = isOther ? "other" : field.value;

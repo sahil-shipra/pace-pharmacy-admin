@@ -2,7 +2,9 @@ import z from "zod";
 
 export const AccountSchema = z.object({
     id: z.number(),
-    holderName: z.string().min(1, 'Holder name is required'),
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
+    holderName: z.string(),
     designation: z.string().min(1, 'Designation is required'),
     organizationName: z.string().min(1, 'Organization name is required'),
     organizationType: z.string().optional().default("general-medical"),
@@ -30,7 +32,9 @@ export const MedicalDirectorSchema = z.object({
     id: z.number(),
     accountId: z.number(),
     isAlsoMedicalDirector: z.boolean(),
-    name: z.string().min(1, 'Name is required'),
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
+    name: z.string(),
     licenseNo: z.string(),
     email: z.string().optional().default(''),
 }).refine(

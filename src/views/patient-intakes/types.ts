@@ -56,6 +56,8 @@ export type DocumentsType = {
 export type PatientResponse = {
     accounts: {
         id: number;
+        firstName: string,
+        lastName: string,
         holderName: string;
         designation: string;
         organizationName: string;
@@ -93,6 +95,8 @@ export type PatientResponse = {
         id: number;
         accountId: number;
         isAlsoMedicalDirector: boolean;
+        firstName: string,
+        lastName: string,
         name: string;
         licenseNo: string;
         email: string;

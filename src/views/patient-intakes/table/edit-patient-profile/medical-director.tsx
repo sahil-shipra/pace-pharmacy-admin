@@ -51,12 +51,28 @@ function MedicalDirector() {
             />
 
             <Controller
-                name="medical_directors.name"
+                name="medical_directors.firstName"
                 control={methods.control}
                 render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="grid grid-cols-2 gap-2">
                         <FieldLabel htmlFor="medical-director-name" className="text-muted-foreground">
-                            {`Director Name`}<span className="text-destructive">{`*`}</span>
+                            {`Director First Name`}<span className="text-destructive">{`*`}</span>
+                        </FieldLabel>
+                        <Input aria-invalid={fieldState.invalid} id="medical-director-name" autoComplete="off" {...field} />
+                        {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                        )}
+                    </Field>
+                )}
+            />
+
+            <Controller
+                name="medical_directors.lastName"
+                control={methods.control}
+                render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid} className="grid grid-cols-2 gap-2">
+                        <FieldLabel htmlFor="medical-director-name" className="text-muted-foreground">
+                            {`Director Last Name`}<span className="text-destructive">{`*`}</span>
                         </FieldLabel>
                         <Input aria-invalid={fieldState.invalid} id="medical-director-name" autoComplete="off" {...field} />
                         {fieldState.invalid && (
