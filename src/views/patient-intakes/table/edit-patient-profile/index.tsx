@@ -28,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { updateRequestSchema, type UpdateAccountData } from "./schema"
 import Documents from "./documents"
 import PaymentInformation from "../payment-information"
+import KrollReport from "./kroll-report"
 
 interface Props {
     accountId: number
@@ -77,42 +78,90 @@ function EditPatientProfile({ accountId }: Props) {
     const methods = useForm<UpdateAccountData>({
         resolver: zodResolver(updateRequestSchema as any),
         defaultValues: {
-
+            account: {
+                id: 0,
+                firstName: "",
+                lastName: "",
+                holderName: "",
+                designation: "",
+                organizationName: "",
+                organizationType: "general-medical",
+                contactPerson: "",
+                phone: "",
+                emailAddress: "",
+                fax: "",
+                createdAt: "",
+                updatedAt: "",
+                preferredLocation: 0,
+                shippingSameAsBilling: false,
+            },
+            billingAddress: {
+                addressLine1: "",
+                addressLine2: "",
+                city: "",
+                province: "",
+                postalCode: "",
+            },
+            shippingAddress: {
+                addressLine1: "",
+                addressLine2: "",
+                city: "",
+                province: "",
+                postalCode: "",
+            },
+            medical_directors: {
+                id: 0,
+                accountId: 0,
+                isAlsoMedicalDirector: false,
+                firstName: "",
+                lastName: "",
+                name: "",
+                licenseNo: "",
+                email: "",
+            },
+            kroll_status: {
+                status: "pending",
+            },
         }
     })
 
     useEffect(() => {
         if (open && isSuccess && data) {
-            // Only set fields that match the form's expected value types and structure
-
-            // Sanitize account fields for form (holderName and shippingSameAsBilling)
             const { holderName, shippingSameAsBilling, ...account } = data.accounts ?? {};
+            const emptyAddress = { addressLine1: "", addressLine2: "", city: "", province: "", postalCode: "" };
 
-            methods.setValue('account', {
-                ...account,
-                organizationType: account.organizationType || "general-medical", // Default if missing
-                holderName: holderName ?? "",
-                // Default to false if null/undefined (since boolean only)
-                shippingSameAsBilling: typeof shippingSameAsBilling === 'boolean' ? shippingSameAsBilling : false,
+            methods.reset({
+                account: {
+                    ...account,
+                    organizationType: account.organizationType || "general-medical",
+                    holderName: holderName ?? "",
+                    shippingSameAsBilling: typeof shippingSameAsBilling === 'boolean' ? shippingSameAsBilling : false,
+                },
+                billingAddress: Array.isArray(data.addresses) && data.addresses[0] ? data.addresses[0] : emptyAddress,
+                shippingAddress: Array.isArray(data.addresses) && data.addresses[1] ? data.addresses[1] : emptyAddress,
+                medical_directors: data.medical_directors ?? {
+                    id: 0,
+                    accountId: 0,
+                    isAlsoMedicalDirector: false,
+                    firstName: "",
+                    lastName: "",
+                    name: "",
+                    licenseNo: "",
+                    email: "",
+                },
+                kroll_status: {
+                    status: data.kroll_status?.status ?? "pending",
+                },
             });
-
-            // Addresses
-            if (Array.isArray(data.addresses)) {
-                if (data.addresses[0]) methods.setValue('billingAddress', data.addresses[0]);
-                if (data.addresses[1]) methods.setValue('shippingAddress', data.addresses[1]);
-            }
-
-            // Medical directors
-            if (data.medical_directors) {
-                methods.setValue('medical_directors', data.medical_directors);
-            }
-        }
-
-        return () => {
-            methods.clearErrors()
-            methods.reset()
         }
     }, [data, isSuccess, open])
+
+    useEffect(() => {
+        if (!open) {
+            methods.reset();
+            methods.clearErrors();
+        }
+    }, [open]);
 
     const queryClient = useQueryClient()
     const { mutate: onUpdateAccount, isPending } = useMutation({
@@ -181,7 +230,7 @@ function EditPatientProfile({ accountId }: Props) {
                                                 <div className="w-1/2 min-h-96 pl-6 flex flex-col gap-8">
                                                     <MedicalDirector />
                                                     <Documents referenceCode={data.applications.referenceCode} />
-
+                                                    <KrollReport />
                                                     <PaymentInformation paymentInformation={data.payment_information} />
 
                                                     <InfoSection

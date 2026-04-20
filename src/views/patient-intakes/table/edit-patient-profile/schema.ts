@@ -55,6 +55,9 @@ export const updateRequestSchema = z.object({
     billingAddress: AddressSchema,
     shippingAddress: AddressSchema,
     medical_directors: MedicalDirectorSchema,
+    kroll_status: z.object({
+        status: z.enum(["complete", "pending"], { message: "Kroll status must be either 'complete' or 'pending'" })
+    })
 });
 
 // Type inference:

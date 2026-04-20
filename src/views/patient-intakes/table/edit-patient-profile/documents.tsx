@@ -102,8 +102,8 @@ function Documents({ referenceCode, viewOnly }: Props) {
 
 
     return (
-        <Fragment>
-            <div className="flex flex-col gap-3">
+        <div>
+            <div className="flex flex-col">
                 <h1 className="text-theme-green text-xl">Documents</h1>
             </div>
 
@@ -215,7 +215,7 @@ function Documents({ referenceCode, viewOnly }: Props) {
                 )}
 
             </div>
-        </Fragment>
+        </div>
     )
 }
 

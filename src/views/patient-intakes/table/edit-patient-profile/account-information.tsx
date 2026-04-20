@@ -77,7 +77,6 @@ function AccountInformation() {
                 name="account.organizationType"
                 control={methods.control}
                 render={({ field, fieldState }) => {
-                    console.log('field.value', field.value)
                     const isOther = field.value === "other" ||
                         (field.value && !["general-medical", "aesthetics", "naturopathic", "other"].includes(field.value));
                     const selectValue = isOther ? "other" : field.value;
@@ -89,7 +88,7 @@ function AccountInformation() {
                                 {`Clinic Type`}<span className="text-destructive">{`*`}</span>
                             </FieldLabel>
                             <Select
-                                value={selectValue}
+                                value={selectValue ?? ""}
                                 onValueChange={(val) => {
                                     if (val !== "other") {
                                         field.onChange(val);

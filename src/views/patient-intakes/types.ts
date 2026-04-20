@@ -136,4 +136,11 @@ export type PatientResponse = {
         province: string;
         postalCode: string;
     }>;
+    kroll_status: {
+        id: number;
+        accountId: number;
+        status: "complete" | "pending";
+        createdAt: string;
+        updatedAt: string;
+    }
 };
