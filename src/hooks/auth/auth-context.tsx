@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { getCurrentUser, signin, signout } from './_api'
+import { getCurrentUser, signin, signout, updateCurrentUser } from './_api'
 import { isErrorResponse, isSuccessResponse } from '@/types/common.api'
 
 interface User {
@@ -14,6 +14,7 @@ interface AuthContextType {
     signIn: (email: string, password: string) => Promise<void>
     signOut: () => Promise<void>
     checkAuth: () => Promise<void>
+    updateUser: (data: { name: string }) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -55,6 +56,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(response.data.user)
     }
 
+    const updateUser = async ({ name }: { name: string }) => {
+        const response = await updateCurrentUser({
+            display_name: name
+        })
+
+        if (isErrorResponse(response)) {
+            throw new Error(response.error.message || 'Sign in failed')
+        }
+
+        setUser(response.data.user)
+    }
 
     // Sign out
     const signOut = async () => {
@@ -68,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, loading, signIn, signOut, checkAuth }}>
+        <AuthContext.Provider value={{ user, loading, signIn, signOut, checkAuth, updateUser }}>
             {children}
         </AuthContext.Provider>
     )

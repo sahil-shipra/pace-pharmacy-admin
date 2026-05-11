@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { Link, useMatchRoute } from "@tanstack/react-router"
+import { Link, useRouterState } from "@tanstack/react-router"
 import {
     Sidebar,
     SidebarContent,
@@ -11,6 +11,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Users2, type LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface MenuItem {
     name: string
@@ -21,21 +22,24 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
     {
         name: "Patient Intake",
-        url: "/",
+        url: "/dashboard",
         icon: Users2,
     },
 ]
 
 function AppSidebar() {
-    const matchRoute = useMatchRoute()
+    const pathname = useRouterState({
+        select: (state) => state.location.pathname,
+    })
 
     const menus = useMemo(
         () =>
             menuItems.map((menu) => ({
                 ...menu,
-                isActive: matchRoute({ to: menu.url, fuzzy: false }) !== false,
-            })),
-        [matchRoute]
+                isActive: pathname === menu.url,
+            })
+            ),
+        [pathname]
     )
 
     return (
@@ -61,7 +65,9 @@ function AppSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                         >
-                                            <Link to={menu.url} className="bg-theme-green-100 hover:bg-theme-green-200 text-theme-green font-bold text-sm flex justify-start items-center">
+                                            <Link to={menu.url} className={cn("font-bold text-sm flex justify-start items-center hover:bg-theme-green-200",
+                                                menu.isActive && "bg-theme-green-100 text-theme-green"
+                                            )}>
                                                 <Icon className="size-4" />
                                                 <span>{menu.name}</span>
                                             </Link>

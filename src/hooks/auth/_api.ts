@@ -27,3 +27,8 @@ export const getCurrentUser = async (): Promise<ApiResponse<any>> => {
     const response = await Axios.get<ApiResponse<any>>('/auth/me');
     return response.data;
 };
+
+export const updateCurrentUser = async (data: { display_name: string }): Promise<ApiResponse<any>> => {
+    const response = await Axios.patch<ApiResponse<any>>('/auth/me', data);
+    return response.data;
+};
