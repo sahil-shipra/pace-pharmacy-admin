@@ -29,7 +29,7 @@ interface Props {
 
 async function fetchPatient(data: { accountId: number }) {
     const response = await getPatient(data)
-    if (isErrorResponse(response)) throw response.error
+    if (isErrorResponse(response)) throw new Error(response.message)
     return response.data
 }
 

@@ -19,7 +19,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
 async function fetchDocuments(referenceCode: string) {
     const response = await getDocuments(referenceCode)
-    if (isErrorResponse(response)) throw response.error
+    if (isErrorResponse(response)) throw new Error(response.message)
     return response.data
 }
 

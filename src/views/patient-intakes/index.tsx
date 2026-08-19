@@ -22,7 +22,7 @@ import { useState } from "react";
 
 async function fetchPatientIntakes(params: QueryParams) {
     const response = await getAllPatient(params);
-    if (isErrorResponse(response)) throw response.error
+    if (isErrorResponse(response)) throw new Error(response.message)
     return response.data;
 }
 

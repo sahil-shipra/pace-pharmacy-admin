@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
 
         if (isErrorResponse(response)) {
-            throw new Error(response.error.message || 'Sign in failed')
+            throw new Error(response.message || 'Sign in failed')
         }
 
         setUser(response.data.user)
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
 
         if (isErrorResponse(response)) {
-            throw new Error(response.error.message || 'Sign in failed')
+            throw new Error(response.message || 'Update failed')
         }
 
         setUser(response.data.user)

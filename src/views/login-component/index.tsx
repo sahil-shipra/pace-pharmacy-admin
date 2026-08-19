@@ -32,7 +32,7 @@ function LoginComponent() {
             if (isAxiosError(res)) {
                 if (res.code === "ERR_NETWORK") {
                     toast.error('ERR_NETWORK: Failed to reach the API. Verify your connection and retry.')
-                } else toast.error(res.response?.data?.error)
+                } else toast.error(res.response?.data?.message ?? 'Sign in failed')
             } else {
                 toast.error(res.message)
             }
