@@ -63,6 +63,8 @@ export type PatientResponse = {
         organizationName: string;
         organizationType: "general-medical" | "aesthetics" | "naturopathic" | string;
         contactPerson: string;
+        contactPersonPhone: string | null;
+        contactPersonEmail: string | null;
         phone: string;
         emailAddress: string;
         fax: string;
@@ -75,8 +77,15 @@ export type PatientResponse = {
     acknowledgements: {
         id: number;
         accountId: number;
+        // Legacy columns (backward compatibility)
         nameToAcknowledge: string;
         acknowledgementConsent: boolean;
+        // Cardholder acknowledgement
+        cardholderName: string;
+        cardholderConsent: boolean;
+        // Account holder acknowledgement
+        accountHolderName: string;
+        accountHolderConsent: boolean;
         consentDate: string;
     };
     delivery_settings: {
@@ -124,6 +133,10 @@ export type PatientResponse = {
         isSubmitted: boolean;
         submittedDate: string | null;
         prescriptionRequirement: "withPrescription" | "withoutPrescription" | null;
+        confirmation1: boolean | null;
+        confirmation2: boolean | null;
+        confirmation3: boolean | null;
+        authorizedIndividuals: string | null;
     };
     documents: DocumentsType;
     addresses: Array<{
